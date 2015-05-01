@@ -14,9 +14,9 @@ Net::Net(const vector<unsigned> &topology,const string &transferFunction)
         {
             layers.back().push_back(Neuron(numberOutputs,neuronNumber,transferFunction));
         }
-    }
-    // Force the bias node's output to 1.0 (it was the last neuron pushed in this layer):
+     // Force the bias node's output to 1.0 (it was the last neuron pushed in this layer):
     layers.back().back().setOutputValue(1.0);
+    }
 }
 //feedForward - operation to train the network
 void Net::feedForward(const vector<double> &inputValues)
