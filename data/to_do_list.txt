@@ -1,7 +1,0 @@
-1. Add Cross validation for a given set of data. 
-2. Add gui for visualization of the network training
-3. Add more backpropagation methods such as RPROP, Quick Prop, Batch and Incremental
-4. Threading capability
-5. Cache optimiazation
-6. Cross Platform integration
-7. Add Java and Python support
