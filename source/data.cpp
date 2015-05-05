@@ -2,27 +2,22 @@
 
 using namespace std;
 
-Data::Data(const string filename)
+vector<unsigned> getTopology(string input)
 {
-    DataFile.open(filename.c_str());
-}
-
-bool Data::isEof()
-{
-    return DataFile.eof();
-}
-
-void Data::getTopology(vector<unsigned> &topology)
-{
+    ifstream file;
+    file.open(input);
     string line;
     string label;
+    vector<unsigned> topology;
 
-    getline(DataFile, line);
+    getline(file, line);
     stringstream ss(line);
     ss >> label;
-    if (this->isEof() || label.compare("topology:") != 0)
+    while (!file.eof() && label.compare("topology:") != 0)
     {
-        abort();
+        getline(file, line);
+        stringstream ss(line);
+        ss >> label;
     }
 
     while (!ss.eof())
@@ -32,124 +27,206 @@ void Data::getTopology(vector<unsigned> &topology)
         topology.push_back(n);
     }
 
-    return;
+    file.close();
+    return topology;
 }
 
-void Data::getEta(double &eta)
+double getEta(string input)
 {
+    ifstream file;
+    file.open(input);
     string line;
     string label;
+    double eta;
 
-    getline(DataFile, line);
+    getline(file, line);
     stringstream ss(line);
     ss >> label;
-    if (this->isEof() || label.compare("eta:") != 0)
+    while (!file.eof() && label.compare("eta:") != 0)
     {
-        abort();
+        getline(file, line);
+        stringstream ss(line);
+        ss >> label;
     }
 
-    ss >> eta;
+    stringstream s(line);
 
-    return;
+    s >> label;
+    s >> label;
+
+    eta = stod(label);
+
+    file.close();
+    return eta;
 }
 
-void Data::getTransferFunction(string &transferFunction)
+string getTransferFunction(string input)
 {
+    ifstream file;
+    file.open(input);
     string line;
     string label;
+    string transferFunction;
 
-    getline(DataFile, line);
+    getline(file, line);
     stringstream ss(line);
     ss >> label;
-    if (this->isEof() || label.compare("transfer_function:") != 0)
+    while (!file.eof() && label.compare("transfer_function:") != 0)
     {
-        abort();
+        getline(file, line);
+        stringstream ss(line);
+        ss >> label;
     }
 
-    ss >> transferFunction;
+    stringstream s(line);
 
-    return;
+    s >> label;
+    s >> transferFunction;
+
+    file.close();
+    return transferFunction;
 }
 
-void Data::getMomentum(double &momentum)
+double getMomentum(string input)
 {
+    ifstream file;
+    file.open(input);
     string line;
     string label;
+    double momentum;
 
-    getline(DataFile, line);
+    getline(file, line);
     stringstream ss(line);
     ss >> label;
-    if (this->isEof() || label.compare("momentum:") != 0)
+    while (!file.eof() && label.compare("momentum:") != 0)
     {
-        abort();
+        getline(file, line);
+        stringstream ss(line);
+        ss >> label;
     }
 
-    ss >> momentum;
+    stringstream s(line);
 
-    return;
+    s >> label;
+    s >> label;
+
+    momentum = stod(label);
+
+    file.close();
+
+    return momentum;
 }
 
-unsigned Data::getNextInputs(vector<double> &inputVals)
+unsigned getNextInputs(string input, vector<double> &inputVals, int iter)
 {
     inputVals.clear();
+    ifstream file;
+    file.open(input);
 
     string line;
-    getline(DataFile, line);
+    getline(file, line);
     stringstream ss(line);
 
     string label;
     ss >> label;
-    if (label.compare("in:") == 0)
+
+    int counter = 0;
+    while (!file.eof() && counter <= iter)
     {
-        double oneValue;
-        while (ss >> oneValue)
+        getline(file, line);
+        stringstream ss(line);
+        ss >> label;
+        if(label.compare("in:") == 0)
         {
-            inputVals.push_back(oneValue);
+            counter++;
+        }
+        if(label.compare("in:") == 0 && counter == iter)
+        {
+            stringstream s(line);
+            s >> label;
+            while (!s.eof())
+            {
+                string n;
+                double m;
+                s >> n;
+                m = stod(n.c_str());
+                inputVals.push_back(m);
+            }
         }
     }
 
+    file.close();
     return inputVals.size();
 }
 
-unsigned Data::getTargetOutputs(vector<double> &targetOutputVals)
+unsigned getTargetOutputs(string input, vector<double> &targetOutputVals, int iter)
 {
     targetOutputVals.clear();
 
+    ifstream file;
+    file.open(input);
     string line;
-    getline(DataFile, line);
+    getline(file, line);
     stringstream ss(line);
 
     string label;
     ss >> label;
-    if (label.compare("out:") == 0)
+
+    int counter = 0;
+
+    while (!file.eof() && counter <= iter)
     {
-        double oneValue;
-        while (ss >> oneValue)
+        getline(file, line);
+        stringstream ss(line);
+        ss >> label;
+        if(label.compare("out:") == 0)
         {
-            targetOutputVals.push_back(oneValue);
+            counter++;
+        }
+        if(label.compare("out:") == 0 && counter == iter)
+        {
+            stringstream s(line);
+            s >> label;
+            while (!s.eof())
+            {
+                string n;
+                double m;
+                s >> n;
+                m = stod(n.c_str());
+                targetOutputVals.push_back(m);
+            }
         }
     }
+
+    file.close();
 
     return targetOutputVals.size();
 }
 
-void Data::saveNetwork(Net input, string filename, double eta, double momentum)
+void saveNetwork(Net input, string filename)
 {
     ofstream output;
-    output.open(filename + ".txt");
+    output.open(filename);
+
+    cout << "got here" << endl;
 
     //record the architecture of the network first
     output << "topology: ";
     for(int i = 0; i < input.getTotalLayers(); i++)
     {
+        if( i != input.getTotalLayers() - 1)
+        {
             output << input.getLayerSize(i) - 1 << " ";
+        }
+        else
+        {
+            output << input.getLayerSize(i)<< endl;
+        }
     }
 
-    output << endl;
-
     //record learning parameters
-    output << "eta: " << eta << endl;
-    output << "momentum: " << momentum << endl;
+    output << "eta: " << input.getEta() << endl;
+    output << "momentum: " << input.getMomentum() << endl;
     output << "transfer_function: " << input.getTransferFunction() << endl;
 
     //record weights
@@ -175,89 +252,89 @@ void Data::saveNetwork(Net input, string filename, double eta, double momentum)
                     output << *k;
                 }
             }
-
             output << endl;
         }
     }
     output.close();
 }
 
-void Data::loadData(vector<unsigned> &topology, vector<vector<double>> &inputVals, vector<vector<double>> &targetValues, double &eta, double &momentum, string &transferFunction)
+void loadData(string input, vector<unsigned> &topology, vector<vector<double>> &inputVals, vector<vector<double>> &targetValues, double &eta, double &momentum, string &transferFunction)
 {
-    getTopology(topology);
-    getEta(eta);
-    getMomentum(momentum);
-    getTransferFunction(transferFunction);
+    ifstream file;
+    file.open(input);
+
+    topology = getTopology(input);
+    eta = getEta(input);
+    momentum = getMomentum(input);
+    transferFunction = getTransferFunction(input);
 
     vector<double> tempInput, tempOutput;
 
+    int iter = 1;
+
     //Load trainning data from file
-    while (!this->isEof())
+    while (!file.eof())
     {
         // Get new input data and feed it forward:
-        if (getNextInputs(tempInput) != topology[0])
+        if (getNextInputs(input, tempInput, iter) != topology[0])
             break;
         inputVals.push_back(tempInput);
 
         //Get the data for the correct outputs for the inputs just recorded
-        getTargetOutputs(tempOutput);
+        getTargetOutputs(input, tempOutput, iter);
 
         assert(tempOutput.size() == topology.back());
         targetValues.push_back(tempOutput);
+        iter++;
     }
+    file.close();
 }
 
-vector<Connection> Data::readWeights(const int x, const int y)
+vector<double> readWeights(string input, const int x, const int y)
 {
+    ifstream file;
+    file.open(input);
     string line;
     string label;
-    vector<Connection> weights;
+    vector<double> weights;
 
-    getline(DataFile, line);
+    getline(file, line);
     stringstream ss(line);
-    cout << line << endl;
     ss >> label;
-    if (this->isEof() || label.compare("(" + to_string(x)  + ','+ to_string(y) + ')' + ':') != 0)
+    while (file.eof() || label.compare("(" + to_string(x)  + ','+ to_string(y) + ')' + ':') != 0)
     {
-        abort();
+        getline(file, line);
+        stringstream ss(line);
+        ss >> label;
     }
 
-    while (!ss.eof())
+    stringstream s(line);
+    s >> label;
+    while (!s.eof())
     {
-        double n;
-        ss >> n;
-        Connection tmp(n, 0);
-        weights.push_back(tmp);
+        string n;
+        double m;
+        s >> n;
+        m = stof(n.c_str());
+        weights.push_back(m);
     }
-
+    file.close();
     return weights;
 }
 
-Net Data::loadnetwork()
+Net loadnetwork(string input)
 {
-    vector<unsigned> topology;
-    double eta;
-    double momentum;
-    string transferFunction;
-
-    //get
-    getTopology(topology);
-    getEta(eta);
-    getMomentum(momentum);
-    getTransferFunction(transferFunction);
-
-    Net net(topology, transferFunction);
+    Net net(getTopology(input),getTransferFunction(input), getEta(input), getMomentum(input));
 
     //read weights, minus the output layer
     //loop through every layer, except the output layer
-    for(int x = 0; x < net.getTotalLayers() - 2; x++)
+    for(int x = 0; x < net.getTotalLayers() - 1; x++)
     {
         //loop through every node in layer
         for(int y = 0; y < net.getLayerSize(x); y++)
         {
-            net.setWeight(x, y, readWeights(x, y));
+            net.setWeight(x, y, readWeights(input, x, y));
         }
     }
-
     return net;
 }

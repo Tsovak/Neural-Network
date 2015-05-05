@@ -4,42 +4,46 @@
 int main()
 {
     srand(time(NULL));
-    Data trainData("xordata.txt");
 
     vector<unsigned> topology;
+
+    vector<double> cumulativeError;
 
     vector<vector<double>> inputValsA, targetValuesA;
     vector<double> resultValues;
     double minError = .001;
 
     int epochs = 0;
-    int maxEpochs = 500;
+    int maxEpochs = 5000;
 
     ofstream finalOutput;
-    finalOutput.open("finalOutput.txt");
+    finalOutput.open("./data/finalOutput.txt");
 
     double eta;
     double momentum;
 
     string transferFunction;
 
-    trainData.loadData(topology,
-                       inputValsA,
-                       targetValuesA,
-                       eta,
-                       momentum,
-                       transferFunction);
+    loadData("./data/xordata.txt",
+             topology,
+             inputValsA,
+             targetValuesA,
+             eta,
+             momentum,
+             transferFunction);
 
-    Net net(topology,transferFunction);
+    Net net(topology,transferFunction, eta, momentum);
     double recentAverageError;
 
-    double globalError = 999;
+    double currentError = 999;
     double prevErr = 999;
 
+    //continous feed the training data through the network
+    //until it is perfect or after n iterations
     while(prevErr > minError && epochs < maxEpochs)
     {
-        prevErr = globalError;
-        globalError = 0;
+        prevErr = currentError;
+        currentError = 0;
         for(unsigned int i = 0; i < inputValsA.size(); i++)
         {
             // Get new input data and feed it forward:
@@ -49,14 +53,17 @@ int main()
             net.getResults(resultValues);
 
             // Train the net what the outputs should have been:
-            net.backPropagation(targetValuesA[i], eta, momentum);
+            net.backPropagation(targetValuesA[i]);
 
             // Report how well the training is working, average over recent samples:
             recentAverageError = net.getRecentAverageError();
-            globalError += recentAverageError;
+            currentError += recentAverageError;
         }
         epochs++;
+        //cumulativeError.push_back(currentError);
     }
+
+    cout << "Error: "<< prevErr << endl;
 
     //see how well the network trained
     for(unsigned int i = 0; i < inputValsA.size(); i++)
@@ -71,7 +78,10 @@ int main()
         finalOutput << "Inputs: ";
         for(unsigned int j = 0; j < inputValsA[i].size(); j++)
         {
-            finalOutput << inputValsA[i][j] << " ";
+            if(j != inputValsA[i].size() -1)
+                finalOutput << inputValsA[i][j] << " ";
+            else
+                finalOutput << inputValsA[i][j];
         }
 
         finalOutput << endl;
@@ -79,14 +89,20 @@ int main()
         finalOutput << "Expected Output: ";
         for(unsigned int j = 0; j < resultValues.size(); j++)
         {
-            finalOutput << targetValuesA[i][j] << " ";
+            if(j != resultValues.size() - 1)
+                finalOutput << targetValuesA[i][j] << " ";
+            else
+                finalOutput << targetValuesA[i][j];
         }
         finalOutput << endl;
 
-        finalOutput << "Results: ";
+        finalOutput << "Trained Results: ";
         for(unsigned int j = 0; j < resultValues.size(); j++)
         {
-            finalOutput << resultValues[j] << " ";
+            if(j != resultValues.size() -1)
+                finalOutput << resultValues[j] << " ";
+            else
+                finalOutput << resultValues[j];
         }
 
         finalOutput << endl;
@@ -95,12 +111,12 @@ int main()
 
     finalOutput.close();
 
-    //test saving and loading a network
-    trainData.saveNetwork(net, "weights1",.1, .5);
+    //save, load, and resave the network as a test
+    saveNetwork(net, "./data/weights.txt");
 
-    //Net example = trainData.loadnetwork();
+    Net example("./data/weights.txt");
 
-    //trainData.saveNetwork(example, "weights2", .1, .5);
+    saveNetwork(example, "./data/copiedweights.txt");
 
     return 0;
 }

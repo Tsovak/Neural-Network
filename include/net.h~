@@ -7,6 +7,7 @@
 #include <string>
 #include "layer.h"
 #include <string.h>
+#include "data.h"
 
 using namespace std;
 

@@ -7,27 +7,19 @@
 
 using namespace std;
 
-class Data{
-public:
-    Data(const string filename);
-    bool isEof();
-    void getTopology(vector<unsigned> &topology);
-    void getEta(double &eta);
-    void getMomentum(double &momentum);
-    void getTransferFunction(string &transferFunction);
+vector<unsigned> getTopology(string input);
+double getEta(string input);
+double getMomentum(string input);
+string getTransferFunction(string input);
 
-    // Returns the number of input values read from the file:
-    unsigned getNextInputs(vector<double> &inputVals);
-    unsigned getTargetOutputs(vector<double> &targetOutputVals);
+unsigned getNextInputs(string input, vector<double> &inputVals);
+unsigned getTargetOutputs(string input, vector<double> &targetOutputVals);
 
-    vector<Connection> readWeights(int x, int y);
+vector<Connection> readWeights(string input, const int x, const int y);
 
-    void saveNetwork(Net input, string filename, double eta, double momentum);
+void saveNetwork(Net input, string filename);
 
-    void loadData(vector<unsigned> &topology, vector<vector<double>> &inputVals, vector<vector<double>> &targetValues, double &eta, double &momentum, string &transferFunction);
+void loadData(string input, vector<unsigned> &topology, vector<vector<double>> &inputVals, vector<vector<double>> &targetValues, double &eta, double &momentum, string &transferFunction);
 
-    Net loadnetwork();
+Net loadnetwork(string input);
 
-private:
-    ifstream DataFile;
-};

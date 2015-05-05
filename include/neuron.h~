@@ -51,7 +51,7 @@ class Neuron{
 public:
     Neuron(unsigned numberOutputs, unsigned id);
 
-    Neuron(unsigned numberOutputs, unsigned id, const string &transferFunction);
+    Neuron(unsigned numberOutputs, unsigned id, const string &transferfunction);
 
     void setOutputValue(double value);
 
@@ -59,7 +59,7 @@ public:
 
     void setWeights(vector<Connection> input);
 
-    vector<double> getConnections();
+    vector<double> getConnections() const;
 
     void feedForward(const Layer &prevLayer);
 

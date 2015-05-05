@@ -1,5 +1,7 @@
 #include "net.h"
-Net::Net(const vector<unsigned> &topology,const string &transferFunction)
+#include "data.h"
+
+Net::Net(const vector<unsigned> &topology,const string &transferFunction, double eta, double momentum)
 {
     // size
     unsigned numberOfLayers = topology.size();
@@ -8,16 +10,35 @@ Net::Net(const vector<unsigned> &topology,const string &transferFunction)
     {
         layers.push_back(Layer());
         //number of outputs to a neuron
-        unsigned numberOutputs= (layerNumber==topology.size()-1) ? 0: topology[layerNumber+1];
-        // fill layer wiith neurons and add bias neuron to the layer;
-        for (unsigned neuronNumber = 0; neuronNumber <= topology[layerNumber] ; neuronNumber++)
+        unsigned numberOutputs = (layerNumber == topology.size()-1) ? 0: topology[layerNumber+1];
+        // fill layer with neurons and add bias neuron to the layer;
+        if(layerNumber != numberOfLayers  - 1)
         {
-            layers.back().push_back(Neuron(numberOutputs,neuronNumber,transferFunction));
+            for (unsigned neuronNumber = 0; neuronNumber <= topology[layerNumber] ; neuronNumber++)
+            {
+                layers.back().push_back(Neuron(numberOutputs,neuronNumber,transferFunction));
+            }
+            // Force the bias node's output to 1.0 (it was the last neuron pushed in this layer):
+            layers.back().back().setOutputValue(1.0);
         }
-     // Force the bias node's output to 1.0 (it was the last neuron pushed in this layer):
-    layers.back().back().setOutputValue(1.0);
+        else
+        {
+            for (unsigned neuronNumber = 0; neuronNumber < topology[layerNumber] ; neuronNumber++)
+            {
+                layers.back().push_back(Neuron(numberOutputs,neuronNumber,transferFunction));
+            }
+        }
     }
+    this->eta = eta;
+    this->momentum = momentum;
+    this->transferfunction = transferFunction;
 }
+
+Net::Net(string input)
+{
+    *this = loadnetwork(input);
+}
+
 //feedForward - operation to train the network
 void Net::feedForward(const vector<double> &inputValues)
 {
@@ -38,13 +59,13 @@ void Net::feedForward(const vector<double> &inputValues)
     }
 }
 // backPropagation learning
-void Net::backPropagation(const vector<double> &targetValues,const double &eta ,const double &alpha)
+void Net::backPropagation(const vector<double> &targetValues)
 {
     //Calculate overall net error (RMS-root mean square error - of output neuron errors)
     Layer &outputLayer = layers.back();
     //overwall net error
     error=0.0;
-    for(unsigned n = 0; n < outputLayer.size() -1; n++)
+    for(unsigned n = 0; n < outputLayer.size(); n++)
     {
         double delta = targetValues[n] - outputLayer[n].getOutputValue();
         error += delta*delta;
@@ -53,40 +74,42 @@ void Net::backPropagation(const vector<double> &targetValues,const double &eta ,
 
     recentAverageError = error;
     //Calculate output layer gradients
-    for(unsigned n = 0; n < outputLayer.size() -1; n++)
+    for(unsigned n = 0; n < outputLayer.size(); n++)
     {
         outputLayer[n].calculateOutputGradients(targetValues[n]);
     }
     //Calculate hidden layer gradients
-    for(unsigned layerNumber = layers.size() -2; layerNumber >0 ; layerNumber--)
+    for(unsigned layerNumber = layers.size() -2; layerNumber > 0; layerNumber--)
     {
         Layer &hiddenLayer = layers[layerNumber];
         Layer &nextLayer = layers[layerNumber+1];
-        for(unsigned n = 0; n < hiddenLayer.size(); n++)
+        for(unsigned n = 0; n < hiddenLayer.size() - 1; n++)
         {
             hiddenLayer[n].calculateHiddenGradients(nextLayer);
         }
     }
     //For all layers from outputs to first hidden layer,
     //update connection weights
-    for(unsigned layerNumber = layers.size() -1; layerNumber > 0; layerNumber--)
+    for(unsigned layerNumber = layers.size() - 1; layerNumber > 0; layerNumber--)
     {
         Layer &layer = layers[layerNumber];
         Layer &prevLayer = layers[layerNumber-1];
-        for(unsigned n = 0; n < layer.size() -1; n++)
+        //cout << layer.size() << endl;
+        for(unsigned n = 0; n < layer.size(); n++)
         {
-            layer[n].updateInputWeights(prevLayer,eta,alpha);
+            layer[n].updateInputWeights(prevLayer,this->eta,this->momentum);
         }
     }
 }
 void Net::getResults(vector<double> &resultValues) const
 {
     resultValues.clear();
-    for (unsigned n = 0; n < layers.back().size() - 1; n++)
+    for (unsigned n = 0; n < layers.back().size(); n++)
     {
         resultValues.push_back(layers.back()[n].getOutputValue());
     }
 }
+
 double Net::getRecentAverageError(void) const
 {
     return recentAverageError;
@@ -111,22 +134,22 @@ void Net::setLayer(vector<double> values, int row)
     }
 }
 
-int Net::getTotalLayers()
+int Net::getTotalLayers() const
 {
     return layers.size();
 }
 
-int Net::getLayerSize(int x)
+int Net::getLayerSize(int x) const
 {
     return layers[x].size();
 }
 
-vector<double> Net::getWeights(int x, int y)
+vector<double> Net::getWeights(int x, int y) const
 {
     return layers[x][y].getConnections();
 }
 
-void Net::setWeight(int x, int y, vector<Connection> input)
+void Net::setWeight(int x, int y, vector<double> input)
 {
     layers[x][y].setWeights(input);
 }
@@ -134,4 +157,30 @@ void Net::setWeight(int x, int y, vector<Connection> input)
 string Net::getTransferFunction() const
 {
     return transferfunction;
+}
+
+double Net::getEta() const
+{
+    return eta;
+}
+
+double Net::getMomentum() const
+{
+    return momentum;
+}
+
+Net& Net::operator = (const Net &rhs)
+{
+    this->layers = rhs.layers;
+    this->transferfunction = rhs.transferfunction;
+    this->eta = rhs.eta;
+    this->momentum = rhs.momentum;
+    for(int x = 0; x < this->getTotalLayers(); x++)
+    {
+        for(int y = 0; y < this->getLayerSize(x); y++)
+        {
+            this->setWeight(x, y, rhs.getWeights(x,y));
+        }
+    }
+    return *this;
 }

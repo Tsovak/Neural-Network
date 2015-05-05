@@ -57,9 +57,9 @@ public:
 
     double getOutputValue() const;
 
-    void setWeights(vector<Connection> input);
+    void setWeights(vector<double> input);
 
-    vector<double> getConnections();
+    vector<double> getConnections() const;
 
     void feedForward(const Layer &prevLayer);
 
