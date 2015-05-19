@@ -23,4 +23,7 @@ This program has the functions and derivatives of the logistical functions step,
 
 The last part of a neural network are the weights that accompany each connection. These weights are the dynamic part of the network. They are adjusted in a process called back propagation in an attempt to generate the proper output given an input for every case of inputs and outputs.
 
-To be continued when I have more downtime in the lab.
+How do you use this?
+
+The file tester.cpp in source is a generic tester for a given set of data. It takes the data that passes as the constructor
+for trainData, and trains the network on that data and the architecture (and weights) specified in the file. Once the training is completed, either because the network converged or the max training iterations has occurred, then the network will write what it's trained outputs are to "finalOutput.txt", as well as save the network (the weights), to the file "weights1). 
