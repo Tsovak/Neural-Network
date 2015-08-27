@@ -1,3 +1,7 @@
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <cassert>
 #include "../include/data.h"
 
 using namespace std;
@@ -205,8 +209,7 @@ unsigned getTargetOutputs(string input, vector<double> &targetOutputVals, int it
 
 void saveNetwork(Net input, string filename)
 {
-    ofstream output;
-    output.open(filename);
+    ofstream output(filename.c_str());
 
     cout << "got here" << endl;
 

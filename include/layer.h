@@ -1,13 +1,7 @@
 #ifndef NN_LAYER_H
 #define NN_LAYER_H
 
-#include <vector>
+// layer definition was moved to neuron.h
 #include "neuron.h"
-
-using namespace std;
-
-class Neuron;
-
-typedef vector<Neuron> Layer;
 
 #endif // defined(NN_LAYER_H)

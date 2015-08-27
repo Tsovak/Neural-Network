@@ -1,5 +1,7 @@
 #include "neuron.h"
 
+using namespace std;
+
 //double Neuron::eta = 0.15; // overall net learning rate, [0.0..1.0]
 //double Neuron::alpha = 0.5; // momentum, multiplier of last deltaWeight, [0.0..1.0]
 

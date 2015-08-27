@@ -1,5 +1,8 @@
+#include <cassert>
 #include "net.h"
 #include "data.h"
+
+using namespace std;
 
 Net::Net(const vector<unsigned> &topology,const string &transferFunction, double eta, double momentum)
 {

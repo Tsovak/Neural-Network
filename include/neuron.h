@@ -1,20 +1,22 @@
 #ifndef NEURON_H
 #define NEURON_H
-#include <iostream>
+
 #include <vector>
 #include <string>
-#include "layer.h"
-#include "math.h"
+#include <cmath>
 #include "connection.h"
 
-using namespace std;
+class Neuron;
+
+typedef std::vector<Neuron> Layer;
+
 class Neuron{ 
 
     double outputValue;
 
     double gradient;
 
-    string transferFunction;
+    std::string transferFunction;
 
     unsigned index;
 
@@ -28,7 +30,7 @@ class Neuron{
     // 0.5 moderate momentum
 
     //conections weights
-    vector<Connection> outputWeights;
+    std::vector<Connection> outputWeights;
 
     //transfer Functions hyperbolic tangent
     static double transferFunctionTanH(double x);
@@ -51,15 +53,15 @@ class Neuron{
 public:
     Neuron(unsigned numberOutputs, unsigned id);
 
-    Neuron(unsigned numberOutputs, unsigned id, const string &transferfunction);
+    Neuron(unsigned numberOutputs, unsigned id, const std::string &transferfunction);
 
     void setOutputValue(double value);
 
     double getOutputValue() const;
 
-    void setWeights(vector<double> input);
+    void setWeights(std::vector<double> input);
 
-    vector<double> getConnections() const;
+    std::vector<double> getConnections() const;
 
     void feedForward(const Layer &prevLayer);
 

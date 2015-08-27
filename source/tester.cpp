@@ -1,5 +1,10 @@
+#include <iostream>
+#include <fstream>
+
 #include "../include/net.h"
 #include "../include/data.h"
+
+using namespace std;
 
 int main()
 {
@@ -112,7 +117,7 @@ int main()
     finalOutput.close();
 
     //save, load, and resave the network as a test
-    saveNetwork(net, "./data/weights.txt");
+    saveNetwork(net, "data/weights.txt");
 
     Net example("./data/weights.txt");
 

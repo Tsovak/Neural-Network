@@ -2,13 +2,8 @@
 #define NET_H
 
 #include <vector>
-#include <iostream>
-#include <cassert>
 #include <string>
 #include "layer.h"
-#include <string.h>
-
-using namespace std;
 
 class Net{
 
@@ -16,41 +11,41 @@ class Net{
     double recentAverageError;
     double eta;
     double momentum;
-    string transferfunction;
-    vector<Layer> layers ;// layers[layerNumber][neuronNumber]
+    std::string transferfunction;
+    std::vector<Layer> layers ;// layers[layerNumber][neuronNumber]
 
 public:
-    Net(string input);
-    Net(const vector<unsigned> &topology, const string &transferFunction, double eta = 0.1, double momentum = 0.5);
+    Net(std::string input);
+    Net(const std::vector<unsigned> &topology, const std::string &transferFunction, double eta = 0.1, double momentum = 0.5);
 
     //feedForward - operation to train the network
-    void feedForward(const vector<double> &inputValues);
+    void feedForward(const std::vector<double> &inputValues);
 
     //backPropagation learning
-    void backPropagation(const vector<double> &targetValues);
+    void backPropagation(const std::vector<double> &targetValues);
 
-    void getResults(vector<double> &resultValues) const;
+    void getResults(std::vector<double> &resultValues) const;
 
     double getRecentAverageError() const;
 
-    void setLayer(vector<double> values, int row);
+    void setLayer(std::vector<double> values, int row);
 
-    vector<double> getLayerValues(int row) const;
+    std::vector<double> getLayerValues(int row) const;
 
-    vector<double> getWeights(int x, int y) const;
+    std::vector<double> getWeights(int x, int y) const;
 
     int getTotalLayers() const;
 
     int getLayerSize(int x) const;
 
-    string getTransferFunction() const;
+    std::string getTransferFunction() const;
 
     double getEta() const;
 
     double getMomentum() const;
 
     //Set the weight of neuron x,y to input...
-    void setWeight(int x, int y, vector<double> input);
+    void setWeight(int x, int y, std::vector<double> input);
 
     Net& operator=(const Net &rhs);
 

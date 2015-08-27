@@ -1,29 +1,24 @@
 #ifndef NN_DATA_H
 #define NN_DATA_H
 
-#include <iostream>
 #include <vector>
 #include <string>
-#include <fstream>
-#include <sstream>
 #include "net.h"
 
-using namespace std;
+std::vector<unsigned> getTopology(std::string input);
+double getEta(std::string input);
+double getMomentum(std::string input);
+std::string getTransferFunction(std::string input);
 
-vector<unsigned> getTopology(string input);
-double getEta(string input);
-double getMomentum(string input);
-string getTransferFunction(string input);
+unsigned getNextInputs(std::string input, std::vector<double> &inputVals);
+unsigned getTargetOutputs(std::string input, std::vector<double> &targetOutputVals);
 
-unsigned getNextInputs(string input, vector<double> &inputVals);
-unsigned getTargetOutputs(string input, vector<double> &targetOutputVals);
+std::vector<double> readWeights(std::string input, const int x, const int y);
 
-vector<double> readWeights(string input, const int x, const int y);
+void saveNetwork(Net input, std::string filename);
 
-void saveNetwork(Net input, string filename);
+void loadData(std::string input, std::vector<unsigned> &topology, std::vector<std::vector<double>> &inputVals, std::vector<std::vector<double>> &targetValues, double &eta, double &momentum, std::string &transferFunction);
 
-void loadData(string input, vector<unsigned> &topology, vector<vector<double>> &inputVals, vector<vector<double>> &targetValues, double &eta, double &momentum, string &transferFunction);
-
-Net loadnetwork(string input);
+Net loadnetwork(std::string input);
 
 #endif // defined(NN_DATA_H)
