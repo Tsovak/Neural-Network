@@ -1,3 +1,6 @@
+#ifndef NN_DATA_H
+#define NN_DATA_H
+
 #include <iostream>
 #include <vector>
 #include <string>
@@ -23,3 +26,4 @@ void loadData(string input, vector<unsigned> &topology, vector<vector<double>> &
 
 Net loadnetwork(string input);
 
+#endif // defined(NN_DATA_H)
