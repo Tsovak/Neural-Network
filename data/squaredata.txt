@@ -1,0 +1,12 @@
+topology: 1 4 1
+eta: 0.15
+momentum: 0.2
+transfer_function: th
+in: 1.0
+out: 1.0 
+in: 2.0
+out: 0.5 
+in: 3.0 
+out: 0.25
+in: 4.0 
+out: 0.75
