@@ -211,8 +211,6 @@ void saveNetwork(Net input, string filename)
 {
     ofstream output(filename.c_str());
 
-    cout << "got here" << endl;
-
     //record the architecture of the network first
     output << "topology: ";
     for(int i = 0; i < input.getTotalLayers(); i++)
@@ -267,6 +265,7 @@ void loadData(string input, vector<unsigned> &topology, vector<vector<double>> &
     file.open(input);
 
     topology = getTopology(input);
+
     eta = getEta(input);
     momentum = getMomentum(input);
     transferFunction = getTransferFunction(input);
@@ -290,6 +289,7 @@ void loadData(string input, vector<unsigned> &topology, vector<vector<double>> &
         targetValues.push_back(tempOutput);
         iter++;
     }
+
     file.close();
 }
 

@@ -1,16 +1,16 @@
 Inputs: 1 0
 Expected Output: 1
-Trained Results: 0.998634
+Trained Results: 0.999695
 
 Inputs: 1 1
 Expected Output: 0
-Trained Results: -0.0502712
+Trained Results: 0.021339
 
 Inputs: 0 1
 Expected Output: 1
-Trained Results: 0.998822
+Trained Results: 0.999799
 
 Inputs: 0 0
 Expected Output: 0
-Trained Results: -0.00581293
+Trained Results: 0.00404645
 

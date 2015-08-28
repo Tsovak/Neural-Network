@@ -12,14 +12,12 @@ int main()
 
     vector<unsigned> topology;
 
-    vector<double> cumulativeError;
-
     vector<vector<double>> inputValsA, targetValuesA;
     vector<double> resultValues;
-    double minError = .001;
+    double minError = .000001;
 
     int epochs = 0;
-    int maxEpochs = 5000;
+    int maxEpochs = 10000;
 
     ofstream finalOutput;
     finalOutput.open("./data/finalOutput.txt");
@@ -65,7 +63,6 @@ int main()
             currentError += recentAverageError;
         }
         epochs++;
-        //cumulativeError.push_back(currentError);
     }
 
     cout << "Error: "<< prevErr << endl;

@@ -1,7 +1,7 @@
 #include <cassert>
 #include "net.h"
 #include "data.h"
-
+#include <iostream>
 using namespace std;
 
 Net::Net(const vector<unsigned> &topology,const string &transferFunction, double eta, double momentum)
@@ -45,7 +45,7 @@ Net::Net(string input)
 //feedForward - operation to train the network
 void Net::feedForward(const vector<double> &inputValues)
 {
-    assert(inputValues.size()==layers[0].size() - 1 && " the inputValues size needs to be the same of the first layer - bias");
+    assert(inputValues.size() == layers[0].size() - 1 && " the inputValues size needs to be the same of the first layer - bias");
     for (unsigned i = 0; i < inputValues.size(); i++)
     {
         layers[0][i].setOutputValue(inputValues[i]);
