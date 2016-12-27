@@ -1,6 +1,0 @@
-1. Add gui for visualization of the network training
-  -Graph network error over iterations given a vector<double> of the error values
-2. Add Cross validation for a given set of data. 
-3. Threading capability
-4. Cache optimiazation
-5. Add more backpropagation methods such as RPROP, Quick Prop, Batch and Incremental
